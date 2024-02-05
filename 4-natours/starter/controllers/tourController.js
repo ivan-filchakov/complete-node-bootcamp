@@ -14,6 +14,20 @@ exports.checkId = (req, res, next, val) => {
   next();
 };
 
+exports.checkBody = (req, res, next) => {
+  const checkKeyList = ['name', 'price', 'duration'];
+  for (const key of Object.keys(req.body)) {
+    checkKeyList.splice(checkKeyList.indexOf(key), 1)
+  } 
+  if (checkKeyList.length) {
+    return res.status(400).json({
+      status: 'fail',
+      message: `Missing required properties: ${checkKeyList.join(', ')}`
+    });
+  }
+  next();
+};
+
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -47,7 +61,7 @@ exports.updateTour = (req, res) => {
 
 exports.createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, ...req.body);
+  const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
   fs.writeFile(toursPath, JSON.stringify(tours), (err) => {
     res.status(201).json({
