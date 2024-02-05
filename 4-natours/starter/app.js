@@ -7,12 +7,19 @@ const app = express();
 
 // MIDDLEWARE
 
-app.use(morgan('dev'));
-app.use(express.json());
+console.info({ development_mode: process.env.NODE_ENV });
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev')); /* HTTP request logger */
+}
+
+app.use(express.json()); /* parse body */
+
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
+
+app.use(express.static(`${__dirname}/public`)); /* static files access */
 
 // ROUTES
 
