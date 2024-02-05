@@ -1,5 +1,4 @@
 {
   "singleQuote": true,
-  "lineLength": 80,
-  "endOfLine": "auto"
+  "lineLength": 80
 }
