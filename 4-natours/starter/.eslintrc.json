@@ -16,6 +16,10 @@
     "prefer-destructuring": ["error", { "object": true, "array": false }],
     "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val" }],
     "linebreak-style": "off",
-    "import/no-extraneous-dependencies": "off"
+    "import/no-extraneous-dependencies/es-syntax": "off",
+    "node/no-unsupported-features/es-syntax": ["off", {
+      "version": ">=8.0.0",
+      "ignores": []
+    }]
   }
 }
