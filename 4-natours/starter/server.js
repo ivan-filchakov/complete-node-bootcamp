@@ -10,6 +10,12 @@ const DB = process.env.DATABASE.replace(
 );
 mongoose.connect(DB).then(() => console.log('DB connection successfull'));
 
+const port = +process.env.PORT;
+app.listen(port, () => {
+  console.log(`Server started on port ${port}...`);
+});
+
+// SCHEMA => MODEL EXAMPLE
 // const toursSchema = new mongoose.Schema({
 //   name: {
 //     type: String,
@@ -36,8 +42,3 @@ mongoose.connect(DB).then(() => console.log('DB connection successfull'));
 //   .save()
 //   .then((doc) => console.log(doc))
 //   .catch((err) => console.log(err.message));
-
-const port = +process.env.PORT;
-app.listen(port, () => {
-  console.log(`Server started on port ${port}...`);
-});
