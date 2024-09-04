@@ -1,5 +1,6 @@
 // const mongoose = require('mongoose');
 const Tour = require('../models/tourModel');
+const BaseService = require('../services/baseService');
 
 exports.createTour = async (req, res) => {
   try {
@@ -19,61 +20,14 @@ exports.createTour = async (req, res) => {
 };
 
 exports.getAllTours = async (req, res) => {
-  // const tours = await Tour.find()
-  //   .where('duration')
-  //   .equals(5)
-  //   .where('difficulty')
-  //   .equals('easy');
-
   try {
-    const queryObj = { ...req.query };
-    const exclude = ['page', 'sort', 'limit', 'fields'];
-
-    // 1a basic filtering
-    exclude.forEach((el) => delete queryObj[el]);
-
-    // 1b advanced filtering with operators
-    let queryString = JSON.stringify(queryObj);
-    queryString = queryString.replace(
-      /\b(gte|gt|lte|lt)\b/g,
-      (match) => `$${match}`,
-    );
-    let query = Tour.find(JSON.parse(queryString));
-
-    // 2 sorting
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ');
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort('-createdAt');
-    }
-
-    // 3 field limiting
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
-    }
-
-    // 4 pagination
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 100;
-    const skip = (page - 1) * limit;
-
-    query = query.skip(skip).limit(limit);
-
-    if (req.query.page) {
-      // ???????????
-      const numTours = await Tour.countDocuments();
-      if (skip >= numTours) {
-        throw new Error('Page limit reached');
-      }
-    }
-
+    const service = new BaseService(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .select()
+      .paginate();
     // execute query
-    const tours = await query;
-
+    const tours = await service.query;
     res.status(200).json({
       status: 'success',
       results: tours.length,
