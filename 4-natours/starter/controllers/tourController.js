@@ -141,3 +141,54 @@ exports.getTourStats = async (req, res) => {
     });
   }
 };
+
+exports.getMonthPlan = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+    const conditions = [
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lt: new Date(`${year + 1}-01-01`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          count: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $sort: { month: 1 },
+      },
+      // {
+      //   $limit: 1,
+      // },
+    ];
+    const plan = await Tour.aggregate(conditions);
+    res.status(200).json({
+      status: 'success',
+      dataCount: plan.length,
+      data: plan,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};
