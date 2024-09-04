@@ -6,6 +6,7 @@ const {
   updateTour,
   deleteTour,
   topFive,
+  getTourStats,
   // checkId,
 } = require('../controllers/tourController');
 
@@ -15,6 +16,8 @@ const router = express.Router();
 
 // alias middleware example (must be before getById '/:id'))
 router.route('/top-five').get(topFive, getAllTours);
+
+router.route('/tour-stats').get(getTourStats);
 
 router.route('/').get(getAllTours).post(createTour);
 
