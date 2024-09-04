@@ -89,6 +89,13 @@ exports.getAllTours = async (req, res) => {
   }
 };
 
+exports.topFive = async (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingAverage,price';
+  req.query.fields = 'name,price,ratingAverage,summary,difficulty';
+  next();
+};
+
 exports.getTourById = async (req, res) => {
   try {
     const tour = await Tour.findById(req.params.id);
