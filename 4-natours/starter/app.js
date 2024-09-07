@@ -4,14 +4,13 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
 const app = express();
-
-// MIDDLEWARE
-
 // eslint-disable-next-line no-console
 console.info({ development_mode: process.env.NODE_ENV });
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev')); /* HTTP request logger */
 }
+
+// MIDDLEWARE
 
 app.use(express.json()); /* parse body */
 
@@ -20,10 +19,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(`${__dirname}/public`)); /* static files access */
+// app.use(express.static(`${__dirname}/public`)); /* static files access */
 
 // ROUTES
-
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
