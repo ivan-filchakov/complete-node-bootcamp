@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -7,6 +9,9 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
+    },
+    slug: {
+      type: String,
     },
     duration: {
       type: Number,
@@ -63,6 +68,28 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
+
+function onBeforeSave(next) {
+  this.slug = slugify(this.name, { lower: true });
+  console.log('onBeforeSave preSave', this);
+  next();
+}
+tourSchema.pre('save', onBeforeSave);
+
+// function logInConsole(next) {
+//   console.log('logInConsole preSave', this);
+//   next();
+// }
+
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
+// tourSchema.pre('save', logInConsole);
+
+// eslint-disable-next-line prefer-arrow-callback
+// tourSchema.post('save', function (doc, next) {
+//   doc.test = 'test';
+//   console.log('prePost', this);
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
