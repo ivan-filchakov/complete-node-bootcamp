@@ -73,19 +73,18 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
-function onBeforeSave(next) {
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
+function createSlug(next) {
   this.slug = slugify(this.name, { lower: true });
-  console.log('onBeforeSave preSave', this);
+  // console.log('createSlug preSave', this);
   next();
 }
-tourSchema.pre('save', onBeforeSave);
+tourSchema.pre('save', createSlug);
 
 // function logInConsole(next) {
 //   console.log('logInConsole preSave', this);
 //   next();
 // }
-
-// DOCUMENT MIDDLEWARE: runs before .save() and .create()
 // tourSchema.pre('save', logInConsole);
 
 // eslint-disable-next-line prefer-arrow-callback
@@ -108,6 +107,16 @@ tourSchema.pre('save', onBeforeSave);
 //   console.log(`Query took ${Date.now() - this.start} ms`);
 //   next();
 // });
+
+// AGGREGATION MIDDLEWARE
+function beforeAggregate(next) {
+  this.pipeline().unshift({
+    $match: { secretTour: { $ne: true } },
+  });
+  next();
+  return 1;
+}
+tourSchema.pre('aggregate', beforeAggregate);
 
 const Tour = mongoose.model('Tour', tourSchema);
 
