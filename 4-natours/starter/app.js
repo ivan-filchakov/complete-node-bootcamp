@@ -7,6 +7,7 @@ const app = express();
 
 // MIDDLEWARE
 
+// eslint-disable-next-line no-console
 console.info({ development_mode: process.env.NODE_ENV });
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev')); /* HTTP request logger */

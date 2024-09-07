@@ -8,10 +8,14 @@ const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD,
 );
-mongoose.connect(DB).then(() => console.log('DB connection successfull'));
+mongoose.connect(DB).then(() => {
+  // eslint-disable-next-line no-console
+  console.log('DB connection successfull');
+});
 
 const port = +process.env.PORT;
 app.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log(`Server started on port ${port}...`);
 });
 
