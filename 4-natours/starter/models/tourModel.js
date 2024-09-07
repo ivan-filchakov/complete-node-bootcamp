@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const slugify = require('slugify');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const validator = require('validator');
+
+// function validateDiscount(val) {
+//   // u have acces to full THIS info only when creating new document
+//   return val < this.price;
+// }
 
 const tourSchema = new mongoose.Schema(
   {
@@ -9,8 +16,19 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a name'],
       unique: true,
       trim: true,
-      maxlength: [40, 'A tour name is too long'],
-      minlength: [10, 'name too short'],
+      // SHORT
+      maxlength: 40,
+      minlength: 4,
+      // STUPID ARRAY IDONTLIKEIT
+      // minlength: [10, 'name too short'],
+
+      // SHORT
+      // validate: [validator.isAlpha, 'ONLY ALPHABET CHARACTERS U DUMB'],
+      //DETAILED
+      // validate: {
+      //   validator: validator.isAlpha,
+      //   message: 'only alphabet letters pls',
+      // },
     },
     slug: {
       type: String,
@@ -43,9 +61,23 @@ const tourSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
+      min: 0.01,
       required: [true, 'A tour must have a price'],
     },
-    discountPrice: Number,
+    priceDiscount: {
+      type: Number,
+      default: 0,
+      // DETAILED
+      // validate: {
+      //   // u have acces to full THIS info only when creating new document
+      //   validator: validateDiscount,
+      //   message: '{VALUE} blabalablla',
+      //   customFiled: 'custom field?',
+      // },
+
+      // SHORT
+      // validate: validateDiscount,
+    },
     summary: {
       type: String,
       required: [true, 'A tour must have a summary'],
