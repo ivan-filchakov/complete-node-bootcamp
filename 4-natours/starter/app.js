@@ -26,10 +26,10 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 function handleBadRoute(req, res, next) {
-  res.status(404).json({
-    status: 'fail',
-    message: `bad url - ${req.originalUrl}`,
-  });
+  const errorTest = new Error(`bad url: ${req.originalUrl}`);
+  errorTest.status = 'fail';
+  errorTest.statusCode = 404;
+  next(errorTest);
 }
 app.all('*', handleBadRoute);
 
@@ -39,5 +39,15 @@ app.all('*', handleBadRoute);
 //     message: 'Hello from the server!',
 //   });
 // });
+
+function handleError(err, req, res, next) {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
+  });
+}
+app.use(handleError);
 
 module.exports = app;
