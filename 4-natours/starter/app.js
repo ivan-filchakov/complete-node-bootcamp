@@ -25,6 +25,14 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+function handleBadRoute(req, res, next) {
+  res.status(404).json({
+    status: 'fail',
+    message: `bad url - ${req.originalUrl}`,
+  });
+}
+app.all('*', handleBadRoute);
+
 app.get('/', (req, res) => {
   res.status(200).json({
     status: 'success',
