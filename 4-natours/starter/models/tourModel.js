@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const slugify = require('slugify');
 // eslint-disable-next-line import/no-extraneous-dependencies
-const validator = require('validator');
+// const validator = require('validator');
 
 // function validateDiscount(val) {
 //   // u have acces to full THIS info only when creating new document
