@@ -76,7 +76,7 @@ tourSchema.virtual('durationWeeks').get(function () {
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 function createSlug(next) {
   this.slug = slugify(this.name, { lower: true });
-  // console.log('createSlug preSave', this);
+  console.log('createSlug preSave', this);
   next();
 }
 tourSchema.pre('save', createSlug);
@@ -109,14 +109,14 @@ tourSchema.pre('save', createSlug);
 // });
 
 // AGGREGATION MIDDLEWARE
-function beforeAggregate(next) {
-  this.pipeline().unshift({
-    $match: { secretTour: { $ne: true } },
-  });
-  next();
-  return 1;
-}
-tourSchema.pre('aggregate', beforeAggregate);
+// function beforeAggregate(next) {
+//   this.pipeline().unshift({
+//     $match: { secretTour: { $ne: true } },
+//   });
+//   next();
+//   return 1;
+// }
+// tourSchema.pre('aggregate', beforeAggregate);
 
 const Tour = mongoose.model('Tour', tourSchema);
 
