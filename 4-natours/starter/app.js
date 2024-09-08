@@ -16,8 +16,8 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json()); /* parse body */
 
 function globalMiddleware(req, res, next) {
-  req.requestTime = new Date().toISOString();
-  console.log('request time:', req.requestTime);
+  req.requestTimeLocal = new Date().toLocaleTimeString();
+  console.log(req.requestTimeLocal, req.originalUrl);
   next();
 }
 app.use(globalMiddleware);
