@@ -2,6 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const AppError = require('./common/app-error');
+const globalErrorHandler = require('./common/global-error-handler');
 
 const app = express();
 // eslint-disable-next-line no-console
@@ -26,12 +28,19 @@ app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
 function handleBadRoute(req, res, next) {
-  const errorTest = new Error(`bad url: ${req.originalUrl}`);
-  errorTest.status = 'fail';
-  errorTest.statusCode = 404;
-  next(errorTest);
+  next(
+    new AppError({
+      message: `bad url: ${req.originalUrl}`,
+      status: 'fail',
+      statusCode: 404,
+    }),
+  );
 }
 app.all('*', handleBadRoute);
+
+app.use(globalErrorHandler);
+
+module.exports = app;
 
 // app.get('/', (req, res) => {
 //   res.status(200).json({
@@ -39,15 +48,3 @@ app.all('*', handleBadRoute);
 //     message: 'Hello from the server!',
 //   });
 // });
-
-function handleError(err, req, res, next) {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-}
-app.use(handleError);
-
-module.exports = app;
