@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
@@ -5,18 +6,26 @@ dotenv.config({ path: './config.env' });
 const app = require('./app');
 
 const DB = process.env.DATABASE.replace(
+  // const DB = process.env.DATABASE_LOCAL.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD,
 );
 mongoose.connect(DB).then(() => {
-  // eslint-disable-next-line no-console
   console.log('DB connection successfull');
 });
 
 const port = +process.env.PORT;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`Server started on port ${port}...`);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error(err);
+  console.log('UNHANDLED REJECTION ===================== SHITTING DOWN');
+  server.close(() => {
+    process.exit(1);
+  });
 });
 
 // SCHEMA => MODEL EXAMPLE
