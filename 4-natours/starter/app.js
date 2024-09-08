@@ -18,7 +18,11 @@ app.use(express.json()); /* parse body */
 function globalMiddleware(req, res, next) {
   if (process.env.NODE_ENV === 'development') {
     req.requestTimeLocal = new Date().toLocaleTimeString();
-    console.log(req.requestTimeLocal, req.originalUrl);
+    console.log(
+      req.requestTimeLocal,
+      '===========================================================',
+      req.originalUrl,
+    );
   }
   next();
 }
