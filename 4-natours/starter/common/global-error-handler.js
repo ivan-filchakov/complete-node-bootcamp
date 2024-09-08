@@ -55,10 +55,11 @@ function globalErrorHandler(err, req, res, next) {
   err.status = err.status || 'error';
 
   if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, req, res);
-    return;
-  }
+    sendErrorDev(err, req, res); // ------------------
+    return; // ---------------------------------------
+  } // -----------------------------------------------
   if (process.env.NODE_ENV === 'production') {
+    // -----------------------------------------------
     let error = { ...err };
     error.message = err.message;
     error.name = err.name;
