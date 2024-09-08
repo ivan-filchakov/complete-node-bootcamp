@@ -5,6 +5,19 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
+process.on('unhandledRejection', (err) => {
+  console.error(err.name, err.message);
+  console.log('========= UNHANDLED REJECTION =========');
+  // server.close(() => {
+  //   process.exit(1);
+  // });
+});
+
+process.on('uncaughtException', (err) => {
+  console.error(err.name, err.message);
+  console.log('========= UNCAUGHT EXCEPTION =========');
+});
+
 const DB = process.env.DATABASE.replace(
   // const DB = process.env.DATABASE_LOCAL.replace(
   '<PASSWORD>',
@@ -15,17 +28,9 @@ mongoose.connect(DB).then(() => {
 });
 
 const port = +process.env.PORT;
-const server = app.listen(port, () => {
+app.listen(port, () => {
   // eslint-disable-next-line no-console
   console.log(`Server started on port ${port}...`);
-});
-
-process.on('unhandledRejection', (err) => {
-  console.error(err);
-  console.log('UNHANDLED REJECTION ===================== SHITTING DOWN');
-  server.close(() => {
-    process.exit(1);
-  });
 });
 
 // SCHEMA => MODEL EXAMPLE
