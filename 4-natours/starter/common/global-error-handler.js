@@ -39,7 +39,7 @@ function handleCastErrorDB(err) {
 function handleDuplicateErrorDB(err) {
   return new AppError({
     statusCode: 400,
-    message: `Duplacte field value: ${Object.entries(err.keyValue).toString()}`,
+    message: `Duplacte field values: ${Object.values(err.keyValue).toString()}`,
   });
 }
 
