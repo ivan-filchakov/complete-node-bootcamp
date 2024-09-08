@@ -43,6 +43,13 @@ function handleDuplicateErrorDB(err) {
   });
 }
 
+function handleValidationErrorDB(err) {
+  return new AppError({
+    statusCode: 400,
+    message: err.message,
+  });
+}
+
 function globalErrorHandler(err, req, res, next) {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -60,6 +67,9 @@ function globalErrorHandler(err, req, res, next) {
     }
     if (error.code === 11000) {
       error = handleDuplicateErrorDB(error);
+    }
+    if (error.name === 'ValidationError') {
+      error = handleValidationErrorDB(error);
     }
     sendErrorProd(error, req, res);
   }
