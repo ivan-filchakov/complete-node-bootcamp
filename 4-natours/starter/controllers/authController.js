@@ -105,3 +105,21 @@ module.exports.checkRoles =
     }
     next();
   };
+
+module.exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1. get user based on posted email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    throw new AppError({
+      statusCode: 404,
+      message: 'user not found',
+    });
+  }
+  // 2. generate reset token
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+  next();
+  // 3. send token to user
+});
+
+module.exports.resetPassword = (req, res, next) => {};
