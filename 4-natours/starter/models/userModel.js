@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema(
       maxlength: 64,
       select: false,
     },
+    passwordChangedAt: {
+      type: Date,
+      select: false,
+    },
     passwordConfirm: {
       type: String,
       required: true,
@@ -63,6 +67,13 @@ userSchema.pre('save', handlePass);
 
 userSchema.methods.checkPassword = async function (candidate, password) {
   return await bcrypt.compare(candidate, password);
+};
+
+userSchema.methods.checkPasswordWasChangedAfter = function (issuedAt) {
+  if (this.passwordChangedAt) {
+    return issuedAt < this.passwordChangedAt;
+  }
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);

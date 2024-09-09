@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../common/catch-async');
@@ -44,8 +45,8 @@ module.exports.login = catchAsync(async (req, res, next) => {
     : false;
   if (!user || !authSuccess) {
     throw new AppError({
-      statusCode: 403,
-      message: 'authentication fail',
+      statusCode: 401,
+      message: 'authentication fail. email-password doesnt match',
     });
   }
   // 3. send token if ok
@@ -54,4 +55,40 @@ module.exports.login = catchAsync(async (req, res, next) => {
     status: 'success',
     token,
   });
+});
+
+module.exports.protectAuth = catchAsync(async (req, res, next) => {
+  const { authorization } = req.headers;
+  // 1. check token provided
+  const token = authorization ? authorization.split('Bearer ')[1] : null;
+  if (!authorization || !token) {
+    throw new AppError({
+      statusCode: 401,
+      message: 'authentication fail. no token bearer',
+    });
+  }
+  // 2. token verification
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  // 3. check user still exists
+  const user = await User.findById(decoded.id).select('+passwordChangedAt');
+  if (!user) {
+    throw new AppError({
+      statusCode: 401,
+      message: 'authentication fail. user no longer exists',
+    });
+  }
+  // 4. check if there was password change
+  const tokenIssuedAt = new Date(
+    decoded.iat * 1000 /* iat somehow comes in SECONDS instead of MS */,
+  );
+  const passWasChanged = user.checkPasswordWasChangedAfter(tokenIssuedAt);
+  if (passWasChanged) {
+    throw new AppError({
+      statusCode: 401,
+      message: 'authentication fail. password was changed',
+    });
+  }
+  // grant access to protected route
+  req.user = user;
+  next();
 });

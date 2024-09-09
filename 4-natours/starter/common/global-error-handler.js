@@ -50,6 +50,20 @@ function handleValidationErrorDB(err) {
   });
 }
 
+function handleJWTError(err) {
+  return new AppError({
+    statusCode: 401,
+    message: `Authentication error`,
+  });
+}
+
+function handleJWTExpiredError(err) {
+  return new AppError({
+    statusCode: 401,
+    message: `Session expired. Pls relogin`,
+  });
+}
+
 function globalErrorHandler(err, req, res, next) {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -65,6 +79,12 @@ function globalErrorHandler(err, req, res, next) {
     error.name = err.name;
     if (error.name === 'CastError') {
       error = handleCastErrorDB(error);
+    }
+    if (error.name === 'JsonWebTokenError') {
+      error = handleJWTError(error);
+    }
+    if (error.name === 'TokenExpiredError') {
+      error = handleJWTExpiredError(error);
     }
     if (error.code === 11000) {
       error = handleDuplicateErrorDB(error);
