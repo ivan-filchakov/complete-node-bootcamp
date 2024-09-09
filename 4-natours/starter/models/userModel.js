@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema(
       maxlength: 99,
       validate: validator.isEmail,
     },
+    role: {
+      type: String,
+      enum: ['user', 'guide', 'lead-guide', 'admin'],
+      default: 'user',
+    },
     password: {
       type: String,
       required: true,

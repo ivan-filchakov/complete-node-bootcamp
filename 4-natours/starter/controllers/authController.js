@@ -92,3 +92,16 @@ module.exports.protectAuth = catchAsync(async (req, res, next) => {
   req.user = user;
   next();
 });
+
+module.exports.checkRoles =
+  (...roles) =>
+  (req, res, next) => {
+    const hasAccess = roles.includes(req.user.role);
+    if (!hasAccess) {
+      throw new AppError({
+        statusCode: 403,
+        message: 'You do not have permission to do this',
+      });
+    }
+    next();
+  };
